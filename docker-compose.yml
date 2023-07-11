@@ -20,7 +20,7 @@ services:
     build:
       context: .
       dockerfile: DockerfileDev
-    container_name: epignosis_recruitment_php81
+    container_name: prosperty_recruitment_php81
     volumes:
       - '.:/var/www/html'
     environment:
