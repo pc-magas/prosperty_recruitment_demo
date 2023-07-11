@@ -1,0 +1,35 @@
+FROM php:8.1-fpm
+
+ENV DEBIAN_FRONTEND noninteractive \
+    APP_UID=1000 \
+    APP_GID=1000
+
+# Basic Extentions
+RUN docker-php-ext-install pdo mysqli pdo_mysql &&\ 
+    curl -sSLf \
+        -o /usr/local/bin/install-php-extensions \
+        https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions && \
+    chmod +x /usr/local/bin/install-php-extensions && \
+	/usr/local/bin/install-php-extensions zip pdo mysqli pdo_mysql intl &&\
+	rm -rf /usr/local/bin/install-php-extensions && \
+ 	apt-get autopurge -y &&\
+ 	apt-get autoremove -y &&\
+ 	apt-get autoclean &&\
+ 	rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* cache/* /var/lib/log/*
+
+
+RUN cd /tmp &&\
+    php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" &&\
+    php composer-setup.php &&\
+    php composer-setup.php --install-dir=/bin --filename=composer &&\
+    chmod +x /bin/composer &&\
+    php -r "unlink('composer-setup.php');"
+
+COPY ./docker/entrypoint-dev.sh /usr/bin/entrypoint
+
+RUN chown root:root /usr/bin/entrypoint &&\
+    chmod +x /usr/bin/entrypoint &&\
+    usermod --shell /bin/bash www-data
+
+ENTRYPOINT [ "/usr/bin/entrypoint" ]
+CMD ["php-fpm"]
