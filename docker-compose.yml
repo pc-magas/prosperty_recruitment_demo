@@ -12,9 +12,9 @@ services:
     environment:
       MYSQL_RANDOM_ROOT_PASSWORD: "yes"
       MYSQL_ONETIME_PASSWORD: "yes"
-      MYSQL_DATABASE: test
-      MYSQL_USER: test_usr
-      MYSQL_PASSWORD: test_passwd
+      MYSQL_DATABASE: laravel
+      MYSQL_USER: laravel_app
+      MYSQL_PASSWORD: laravel_app_passwd
   
   php:
     build:

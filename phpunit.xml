@@ -19,13 +19,21 @@
     </source>
     <php>
         <env name="APP_ENV" value="testing"/>
+        <env name="APP_URL" value="http://example.com"/>
+        
         <env name="BCRYPT_ROUNDS" value="4"/>
         <env name="CACHE_DRIVER" value="array"/>
-        <!-- <env name="DB_CONNECTION" value="sqlite"/> -->
-        <!-- <env name="DB_DATABASE" value=":memory:"/> -->
         <env name="MAIL_MAILER" value="array"/>
         <env name="QUEUE_CONNECTION" value="sync"/>
         <env name="SESSION_DRIVER" value="array"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
+
+
+        <!-- For better testability I prefer a secondary DB -->
+        <env name="DB_NAME" value="mariadb"/>
+        <env name="DB_HOST" value="phpunit"/>
+        <env name="DB_USER" value="laravel_app"/>
+        <env name="DB_PASSWD" value="laravel_app_passwd"/>
+
     </php>
 </phpunit>
