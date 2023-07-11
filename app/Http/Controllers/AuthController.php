@@ -11,14 +11,18 @@ class AuthController extends Controller
 {
     public function login(Request $request)
     {
-        if(empty($request->email) || empty($request->password)){
+        $email = $request->post('email');
+        $password = $request->post('password');
+
+        if(empty($email) || empty($password)){
             return response()->json([
                 'message' => ['Invalid email or password'],
             ],400);
         }
 
-        $user = User::where('email',  $request->email)->first();
-        if (! $user || ! Hash::check($request->password, $user->password)) {
+        $user = User::where('email',  $email)->first();
+        
+        if (! $user || ! Hash::check($password, $user->password)) {
             return response()->json([
                 'message' => ['Username or password incorrect'],
             ],404);

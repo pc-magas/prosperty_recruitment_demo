@@ -15,8 +15,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->post('/token/new',[AuthController::class,'login']);
+Route::post('/token/new',[AuthController::class,'login']);
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+// Kept as a test
+Route::middleware('auth:sanctum')->get('/my_profile', function (Request $request) {
     return $request->user();
 });
