@@ -5,7 +5,7 @@ services:
   db:
     image: mariadb
     ports:
-      - 3307:3306
+      - 3308:3306
     volumes:
       - './volumes/db:/var/lib/mysql'
       - './docker/test_db.sql:/docker-entrypoint-initdb.d/test_db.sql'
@@ -26,7 +26,7 @@ services:
     environment:
       - APP_UID=1000
       - APP_GID=1000
-  
+
   nginx:
     image: nginx:alpine
     ports:
