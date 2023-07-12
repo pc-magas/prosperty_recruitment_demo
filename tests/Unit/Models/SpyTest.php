@@ -108,6 +108,9 @@ class SpyTest extends DatabaseTestCase
         $this->assertNull($foundSpy['country_of_operation']);
     }
 
+    /**
+     * @covers App\Model\Spy::setAgencyAttribute
+     */
     public function testAgencyInvalid()
     {
         $spy = new Spy();
