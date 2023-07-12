@@ -141,17 +141,43 @@ class SpyTest extends DatabaseTestCase
     }
 
     /**
-     * We want to ensure thatr any query will *NOT* accept any database insertion
+     * We want to ensure that any query will *NOT* accept any database insertion
      * If death date less than Birth Date.
      *
      * We do place thies piece of code here because It is an overhead to place it elsewhere.
      * 
-     * @todo fix the constraint
      * @return void
      */
-    // public function testDeathDateLessThanBirthDateFails()
-    // {
-    //     $this->expectException(\Exception::class);
-    //     DB::insert("INSERT INTO spies (name,surname,birth_date,death_date) VALUES ('Namae','Myoji','1980-12-01','1970-12-03')");
-    // }
+    public function testDeathDateLessThanBirthDateFails()
+    {
+        $this->expectException(\Exception::class);
+        DB::insert("INSERT INTO spies (name,surname,birth_date,death_date) VALUES ('Namae','Myoji','1980-12-01','1970-12-03')");
+    }
+
+
+    /**
+     * We want to ensure thatr any query will accept any database insertion
+     * If death date is NULL.
+     *
+     * We do place thies piece of code here because It is an overhead to place it elsewhere.
+     * 
+     * @return void
+     */
+    public function testDeathDateNullRawSql()
+    {
+        DB::insert("INSERT INTO spies (name,surname,birth_date,death_date) VALUES ('Namae','Myoji','1980-12-01',NULL)");
+
+        $records = Spy::all()->toArray();
+
+        $this->assertCount(1,$records);
+
+        $foundSpy = $records[0];
+
+        $this->assertEquals('Namae',$foundSpy['name']);
+        $this->assertEquals('Myoji',$foundSpy['surname']);
+        $this->assertEquals('1980-12-01',$foundSpy['birth_date']);
+        $this->assertEquals('NO-AGENCY',$foundSpy['agency']);
+        $this->assertNull($foundSpy['death_date']);
+        $this->assertNull($foundSpy['country_of_operation']);
+    }
 }
