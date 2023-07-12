@@ -21,3 +21,5 @@ Route::post('/token/new',[AuthController::class,'login']);
 Route::middleware('auth:sanctum')->get('/my_profile', function (Request $request) {
     return $request->user();
 });
+
+Route::middleware('auth:sanctum')->get('/token', [AuthController::class,'refreshToken']);
