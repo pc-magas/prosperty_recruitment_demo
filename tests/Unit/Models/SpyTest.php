@@ -61,7 +61,6 @@ class SpyTest extends DatabaseTestCase
         $this->assertCount(1,$foundSpyRecords);
 
         $foundSpy = $foundSpyRecords[0];
-        dd($foundSpy);
         $this->assertEquals('Namae',$foundSpy['name']);
         $this->assertEquals('Myoji',$foundSpy['surname']);
         $this->assertEquals('1980-12-1',$foundSpy['birth_date']);
