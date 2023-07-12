@@ -15,11 +15,13 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('/token/new',[AuthController::class,'login']);
 
 // Kept as a test
 Route::middleware('auth:sanctum')->get('/my_profile', function (Request $request) {
     return $request->user();
 });
 
+// Registered User Login Logout and refresh token
+Route::post('/token',[AuthController::class,'login']);
 Route::middleware('auth:sanctum')->get('/token', [AuthController::class,'refreshToken']);
+Route::middleware('auth:sanctum')->delete('/token', [AuthController::class,'logout']);

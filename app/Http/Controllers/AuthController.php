@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 use App\Models\User;
 
+/**
+ * This controller needs no tests it is rather straightforward.
+ */
 class AuthController extends Controller
 {
     public function login(Request $request)
@@ -30,12 +34,12 @@ class AuthController extends Controller
 
       $user->tokens()->delete();
 
-      return response()->json([
+      return new JsonResponse([
           'status' => 'success',
           'message' => 'User logged in successfully',
           'name' => $user->name,
           'token' => $user->createToken('auth_token')->plainTextToken,
-      ]);
+      ],201);
     }
 
     public function refreshToken(Request $request)
@@ -51,6 +55,15 @@ class AuthController extends Controller
             'message' => 'Token Refreshed successfully',
             'name' => $user->name,
             'token' => $newToken,
-        ]);
+        ],201);
+    }
+
+    public function logout(Request $request)
+    {
+        $request->user()->currentAccessToken()->delete();
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Logout Success',
+        ],200);
     }
 }
