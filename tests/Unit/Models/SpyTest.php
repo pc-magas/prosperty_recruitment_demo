@@ -2,7 +2,10 @@
 
 namespace Tests\Unit\Models;
 
+use Illuminate\Support\Facades\DB;
+
 use App\Models\Spy;
+
 
 class SpyTest extends DatabaseTestCase
 {
@@ -119,4 +122,36 @@ class SpyTest extends DatabaseTestCase
         $spy->agency = 'lalalala';
     }
 
+    public function testDeathDateLessThanBirthDateFailsUponModel()
+    {
+        $spy = new Spy();
+        $spy->birth_date='1980-12-1';
+
+        $this->expectException(\InvalidArgumentException::class);
+        $spy->death_date = '1970-12-1';
+    }
+
+    public function testBirthDateGreaterThanBirthDateFailsUponModel()
+    {
+        $spy = new Spy();
+        $spy->death_date = '1970-12-1';
+        
+        $this->expectException(\InvalidArgumentException::class);
+        $spy->birth_date='1980-12-1';
+    }
+
+    /**
+     * We want to ensure thatr any query will *NOT* accept any database insertion
+     * If death date less than Birth Date.
+     *
+     * We do place thies piece of code here because It is an overhead to place it elsewhere.
+     * 
+     * @todo fix the constraint
+     * @return void
+     */
+    // public function testDeathDateLessThanBirthDateFails()
+    // {
+    //     $this->expectException(\Exception::class);
+    //     DB::insert("INSERT INTO spies (name,surname,birth_date,death_date) VALUES ('Namae','Myoji','1980-12-01','1970-12-03')");
+    // }
 }
