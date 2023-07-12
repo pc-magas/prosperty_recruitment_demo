@@ -25,7 +25,7 @@ return new class extends Migration
                 'surname',
                 'agency',
                 'birth_date'
-            ]);
+            ],'unique_spy');
 
             $table->timestamps();
 

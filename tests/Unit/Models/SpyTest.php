@@ -107,4 +107,13 @@ class SpyTest extends DatabaseTestCase
         $this->assertNull($foundSpy['death_date']);
         $this->assertNull($foundSpy['country_of_operation']);
     }
+
+    public function testAgencyInvalid()
+    {
+        $spy = new Spy();
+
+        $this->expectException(\InvalidArgumentException::class);
+        $spy->agency = 'lalalala';
+    }
+
 }

@@ -22,7 +22,13 @@ class Spy extends Model
         $value = trim($value);
         $value = strtoupper($value);
 
-        $this->attributes['agency']=$value;
-    }
+        $agencies = \Illuminate\Support\Facades\Config::get('agencies');
 
+        if($value == 'NO-AGENCY' || in_array($value,$agencies)){
+            $this->attributes['agency']=$value;
+            return;
+        }
+        
+        throw new \InvalidArgumentException('Agency Is Invalid');
+    }
 }
