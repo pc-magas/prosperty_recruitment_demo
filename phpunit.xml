@@ -30,8 +30,8 @@
 
 
         <!-- For better testability I prefer a secondary DB -->
-        <env name="DB_NAME" value="mariadb"/>
-        <env name="DB_HOST" value="phpunit"/>
+        <env name="DB_HOST" value="db"/>
+        <env name="DB_NAME" value="phpunit"/>
         <env name="DB_USER" value="laravel_app"/>
         <env name="DB_PASSWD" value="laravel_app_passwd"/>
 
