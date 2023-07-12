@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('surname');
-            $table->string('agency')->nullable();
+            $table->string('agency')->default('NO-AGENCY');
             $table->string('country_of_operation')->nullable();
             $table->date('birth_date');
             $table->date('death_date')->nullable();

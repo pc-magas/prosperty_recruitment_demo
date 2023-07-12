@@ -17,4 +17,12 @@ class Spy extends Model
     protected $table = 'spies';
 
 
+    public function setAgencyAttribute($value){
+        $value = $value??'NO-AGENCY';
+        $value = trim($value);
+        $value = strtoupper($value);
+
+        $this->attributes['agency']=$value;
+    }
+
 }
