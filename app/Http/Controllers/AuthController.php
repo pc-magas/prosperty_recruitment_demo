@@ -37,4 +37,20 @@ class AuthController extends Controller
           'token' => $user->createToken('auth_token')->plainTextToken,
       ]);
     }
+
+    public function refreshToken(Request $request)
+    {
+        $user = $request->user();
+
+        $newToken = $user->createToken('auth_token')->plainTextToken;
+
+        $request->user()->currentAccessToken()->delete();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'User logged in successfully',
+            'name' => $user->name,
+            'token' => $newToken,
+        ]);
+    }
 }
