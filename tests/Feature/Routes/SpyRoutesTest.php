@@ -118,8 +118,6 @@ class SpyRoutesTest extends TestCase
             ['*']
         );
 
-        
-
         $response = $this->put('/spy',[
             'name'=>'Namae',
             'surname'=>'Myoji',
@@ -131,5 +129,27 @@ class SpyRoutesTest extends TestCase
         $response->assertStatus(201);
     }
 
+    public function testError500UponDatabaseMalfuynction()
+    {
+        Sanctum::actingAs(
+            User::factory()->create(),
+            ['*']
+        );
+
+        // Destroy Db in order to make the api return error
+        \Illuminate\Support\Facades\DB::statement("DROP table spies");
+
+
+        $response = $this->put('/spy',[
+            'name'=>'Namae',
+            'surname'=>'Myoji',
+            'birth_date'=>'1980-1-1',
+            'death_date'=>'1985-1-1',
+            'country_of_operation'=>'GR'
+        ]);
+
+        $response->assertStatus(500);
+
+    }
 }
 

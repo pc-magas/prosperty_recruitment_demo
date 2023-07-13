@@ -44,7 +44,6 @@ class SpyController extends BaseController
         try {
             $spy->save();
         } catch(\Exception $e) {
-            dd($e);
             return new JsonResponse(['messages'=>'Spy Could Bot Be saved'],500);
         }
 
