@@ -1,14 +1,18 @@
 <?php
 
-namespace Tests\Models;
+namespace Tests\Unit\Models;
 
 use Illuminate\Support\Facades\DB;
 
 use App\Models\Spy;
 
+use Tests\TestCase;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class SpyTest extends DatabaseTestCase
+class SpyTest extends TestCase
 {
+    use RefreshDatabase;    
+
     public function testInsertNoDuplicate()
     {
         $spy = new Spy();

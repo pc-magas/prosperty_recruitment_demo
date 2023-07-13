@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\SpyController;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -25,3 +27,6 @@ Route::middleware('auth:sanctum')->get('/my_profile', function (Request $request
 Route::post('/token',[AuthController::class,'login']);
 Route::middleware('auth:sanctum')->get('/token', [AuthController::class,'refreshToken']);
 Route::middleware('auth:sanctum')->delete('/token', [AuthController::class,'logout']);
+
+// Spy Test
+Route::middleware('auth:sanctum')->put('/spy', [SpyController::class,'add']);

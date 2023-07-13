@@ -22,6 +22,7 @@ class Spy extends Model
         $value = $value??'NO-AGENCY';
         $value = trim($value);
         $value = strtoupper($value);
+        
 
         $agencies = \Illuminate\Support\Facades\Config::get('agencies');
 
