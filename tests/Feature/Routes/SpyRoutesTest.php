@@ -151,5 +151,25 @@ class SpyRoutesTest extends TestCase
         $response->assertStatus(500);
 
     }
+
+    public function testError409UponDUplicateRecord()
+    {
+        Sanctum::actingAs(
+            User::factory()->create(),
+            ['*']
+        );
+
+        $spy = \App\Models\Spy::factory()->create();
+
+        $response = $this->put('/spy',[
+            'name'=>$spy->name,
+            'surname'=>$spy->surname,
+            'birth_date'=>$spy->birth_date,
+            'death_date'=>$spy->death_date,
+            'country_of_operation'=>$spy->country_of_operation
+        ]);
+
+        $response->assertStatus(409);
+    }
 }
 

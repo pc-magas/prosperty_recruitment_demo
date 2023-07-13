@@ -6,6 +6,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
 
+use Illuminate\Database\QueryException;
+
 use App\Models\Spy;
 
 class SpyController extends BaseController
@@ -27,15 +29,18 @@ class SpyController extends BaseController
             return new JsonResponse(['messages'=>'either name, surname or birthdate cannot be empty'],400);
         }
 
+        $agency =  $request->get('agency');
+
         $spy = new Spy();
         $spy->name = $name;
-        $spy->surname = $name;
+        $spy->surname = $surname;
         $spy->country_of_operation = $request->get('country_of_operation');
 
         try {
             $spy->birth_date = $birthDate;
-            $spy->agency = $request->get('agency');
+            $spy->agency = $agency;
             $spy->deathDate = $request->get('death_date');
+
         // Any exception will occur if mutators throw exception
         }catch(\Exception $e){
             return new JsonResponse(['message'=>$e->getMessage()],400);
@@ -43,10 +48,19 @@ class SpyController extends BaseController
 
         try {
             $spy->save();
-        } catch(\Exception $e) {
-            return new JsonResponse(['messages'=>'Spy Could Bot Be saved'],500);
+        } catch(QueryException $e) {
+            
+            // Database shows this error code if constraint fails
+            // constraint will fail if duplicate record exists upon database
+            if((int)$e->getCode() == 23000){
+                return new JsonResponse(['messages'=>'Spy already exists'],409);
+            }
+
+            return new JsonResponse(['messages'=>'Spy Could not Be saved'],500);
         }
 
         return new JsonResponse(['messages'=>'Spy has sucessfully been saved','spy'=>$spy],201);
-    }   
+    }
+
+
 }
