@@ -16,12 +16,16 @@ class SpyFactory extends Factory
      */
     public function definition(): array
     {
+        $agencies = \Illuminate\Support\Facades\Config::get('agencies');
+        $agency = $agencies[array_rand($agencies)];
+       
         return [
-            'name'=>'Namae',
-            'surname'=>'Myoji',
+            'name'=>'Namae'.(int)rand(),
+            'surname'=>'Myoji'.(int)rand(),
             'birth_date'=>'1980-1-1',
             'death_date'=>'1985-1-1',
-            'country_of_operation'=>'GR'
+            'country_of_operation'=>'GR',
+            'agency'=>$agency
         ];
     }
 }

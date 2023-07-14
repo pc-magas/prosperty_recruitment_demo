@@ -13,10 +13,22 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        \App\Models\User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test1@example.com',
-            'password' => Hash::make('1234')
-        ]);
+        /**
+         * Seeder dues to constraint may cause error.
+         * But for seeding we do not care
+         * because we just want some data
+         */
+        try{
+
+            \App\Models\User::factory()->create([
+                'name' => 'Test User',
+                'email' => 'test1@example.com',
+                'password' => Hash::make('1234')
+            ]);
+        } catch(\Exception $e) {
+
+        }
+
+        \App\Models\Spy::factory()->count(20)->create();
     }
 }

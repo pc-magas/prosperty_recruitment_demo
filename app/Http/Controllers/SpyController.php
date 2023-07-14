@@ -13,7 +13,13 @@ use App\Models\Spy;
 class SpyController extends BaseController
 {
 
-    public function add(Request $request)
+    /**
+     * PUT /spy
+     *
+     * @param Request $request Httpo request
+     * @return JsonResponse
+     */
+    public function add(Request $request): JsonResponse
     {
 
         $name = $request->get('name');
@@ -62,5 +68,20 @@ class SpyController extends BaseController
         return new JsonResponse(['messages'=>'Spy has sucessfully been saved','spy'=>$spy],201);
     }
 
+
+    /**
+     * Get /spy/random
+     *
+     * Return 5 random spies
+     * 
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function randomSpies(Request $request): JsonResponse
+    {
+        $spies = Spy::limit(5)->inRandomOrder()->get();
+
+        return new JsonResponse($spies);
+    }
 
 }
