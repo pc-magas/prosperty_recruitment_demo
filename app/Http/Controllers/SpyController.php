@@ -103,6 +103,7 @@ class SpyController extends BaseController
     {   
         $inputParamers = array_keys($request->all());
 
+        // Input must be a specific subset of input parameters
         if(!empty($inputParamers) && array_intersect($inputParamers, ['page','limit','name','surname','age','sort_fullname','sort_age']) !== $inputParamers){
             return new JsonResponse(['message'=>'Invalid Arguments'],400);
         }
