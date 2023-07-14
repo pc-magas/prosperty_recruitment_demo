@@ -2,9 +2,11 @@
 
 namespace Tests\Feature\Routes;
 
+use Illuminate\Testing\Fluent\AssertableJson;
 use Laravel\Sanctum\Sanctum;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
+use App\Models\Spy;
 use App\Models\User;
 
 use Tests\TestCase;
@@ -157,7 +159,7 @@ class SpyRoutesTest extends TestCase
             ['*']
         );
 
-       \App\Models\Spy::factory()->count(100)->create();
+       Spy::factory()->count(100)->create();
 
         $response1 = $this->get('/spy/random');
         $response1->assertStatus(200);
@@ -167,5 +169,68 @@ class SpyRoutesTest extends TestCase
 
         $this->assertNotEquals($response1->getContent(),$response2->getContent());
     }
+
+    public function testGetSpiesNoFilters()
+    {
+        Sanctum::actingAs(
+            User::factory()->create(),
+            ['*']
+        );
+
+       Spy::factory()->count(100)->create();
+
+       $response = $this->get('/spies?page=1&limit=10');
+
+
+       $response->assertStatus(200);
+
+
+       $expectedRecords = Spy::paginate(10,['*'],'',1)->items();
+       $expectedRecords = json_decode(json_encode($expectedRecords),true);
+
+       $responseContent = $response->getContent();
+       $responseContentJsonDecoded = json_decode($responseContent,true);
+       $this->assertEquals(1,(int)$responseContentJsonDecoded['current_page']);
+       $this->assertEquals(10,(int)$responseContentJsonDecoded['per_page']);
+
+       $this->assertCount(10,$responseContentJsonDecoded['data']);
+
+       $response->assertJson([
+        'current_page'=>1,
+        'data'=> $expectedRecords
+       ]);
+    }
+
+    public function testGetSpiesNoFiltersPage2()
+    {
+        Sanctum::actingAs(
+            User::factory()->create(),
+            ['*']
+        );
+
+       Spy::factory()->count(100)->create();
+
+       $response = $this->get('/spies?page=2&limit=10');
+
+
+       $response->assertStatus(200);
+
+
+       $expectedRecords = Spy::paginate(10,['*'],'',2)->items();
+       $expectedRecords = json_decode(json_encode($expectedRecords),true);
+
+       $responseContent = $response->getContent();
+       $responseContentJsonDecoded = json_decode($responseContent,true);
+       $this->assertEquals(2,(int)$responseContentJsonDecoded['current_page']);
+       $this->assertEquals(10,(int)$responseContentJsonDecoded['per_page']);
+
+       $this->assertCount(10,$responseContentJsonDecoded['data']);
+
+       $response->assertJson([
+        'current_page'=>2,
+        'data'=> $expectedRecords
+       ]);
+    }
+
 }
 

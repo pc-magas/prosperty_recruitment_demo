@@ -83,4 +83,16 @@ class SpyController extends BaseController
         return new JsonResponse($spies);
     }
 
+    /**
+     * GET /spies
+     *
+     * @return JsonResponse
+     */
+    public function spies(Request $request): JsonResponse
+    {
+        $page = (int)$request->get('page');
+        $limit = (int)$request->get('limit');
+
+        return new JsonResponse(Spy::paginate($limit,['*'],'',$page),200);
+    }
 }

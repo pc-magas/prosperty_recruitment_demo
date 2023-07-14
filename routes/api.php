@@ -30,4 +30,5 @@ Route::middleware('auth:sanctum')->delete('/token', [AuthController::class,'logo
 
 // Spy Test
 Route::middleware('auth:sanctum')->put('/spy', [SpyController::class,'add']);
-Route::middleware(['auth:sanctum','throttle:10,1'])->get('/spy/random', [SpyController::class,'randomSpies']);
+Route::middleware(['auth:sanctum'])->get('/spies', [SpyController::class,'spies']);
+Route::middleware(['auth:sanctum','throttle:10,1'])->get('/spies/random', [SpyController::class,'randomSpies']);

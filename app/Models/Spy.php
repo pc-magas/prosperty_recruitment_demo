@@ -6,6 +6,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 
+/**
+ * A spy records in the database
+ * 
+ * @param int id Primary Key
+ * @param name  
+ * 
+ */
 class Spy extends Model
 {
     use HasFactory;
@@ -17,6 +24,11 @@ class Spy extends Model
      */
     protected $table = 'spies';
 
+    /**
+     * Columsn that would not be Serialized
+     * @var array
+     */
+    protected $hidden = ['created_at','updated_at'];
 
     public function setAgencyAttribute($value){
         $value = $value??'NO-AGENCY';
