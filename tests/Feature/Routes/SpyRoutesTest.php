@@ -148,5 +148,24 @@ class SpyRoutesTest extends TestCase
 
         $response->assertStatus(409);
     }
+
+
+    public function testGetRandomSpiesInRandomOrder()
+    {
+        Sanctum::actingAs(
+            User::factory()->create(),
+            ['*']
+        );
+
+       \App\Models\Spy::factory()->count(100)->create();
+
+        $response1 = $this->get('/spy/random');
+        $response1->assertStatus(200);
+
+        $response2 = $this->get('/spy/random');
+        $response2->assertStatus(200);
+
+        $this->assertNotEquals($response1->getContent(),$response2->getContent());
+    }
 }
 
