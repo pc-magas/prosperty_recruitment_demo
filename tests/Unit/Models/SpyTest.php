@@ -45,6 +45,36 @@ class SpyTest extends TestCase
         $this->assertNull($foundSpy['country_of_operation']);
     }
 
+    public function testInsertNoDuplicateAllColumns()
+    {
+        $spy = Spy::factory()->create();
+
+        $spy2 = new Spy();
+        $spy2->name=$spy->name;
+        $spy2->surname=$spy->surname;
+        $spy2->birth_date=$spy->birth_date;
+        $spy2->agency=$spy->agency;
+        $spy2->death_date=$spy->death_date;
+        $spy2->country_of_operation=$spy->country_of_operation;
+
+
+        $this->expectException(\Exception::class);
+        $spy2->save();
+
+        $foundSpyRecords = Spy::all()->toArray();
+
+        $this->assertCount(1,$foundSpyRecords);
+
+        $foundSpy = $foundSpyRecords[0];
+
+        $this->assertEquals('Namae',$foundSpy['name']);
+        $this->assertEquals('Myoji',$foundSpy['surname']);
+        $this->assertEquals('1980-12-1',$foundSpy['birth_date']);
+        $this->assertEquals('FSB',$foundSpy['agency']);
+        $this->assertNull($foundSpy['death_date']);
+        $this->assertNull($foundSpy['country_of_operation']);
+    }
+
     public function testInsertNoDuplicateAgencyNull()
     {
         $spy = new Spy();

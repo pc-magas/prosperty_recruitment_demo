@@ -21,7 +21,6 @@ class SpyController extends BaseController
      */
     public function add(Request $request): JsonResponse
     {
-
         $name = $request->get('name');
         $name = trim($name)??null;
 
@@ -35,7 +34,11 @@ class SpyController extends BaseController
             return new JsonResponse(['messages'=>'either name, surname or birthdate cannot be empty'],400);
         }
 
-        $agency =  $request->get('agency');
+        $agency =  $request->get('agency')??'NO-AGENCY';
+        $foundSpy = Spy::where('name',$name)->where('surname',$surname)->where('agency',$agency)->where('birth_date',$birthDate)->first();
+        if($foundSpy){
+            return new JsonResponse(['message'=>'Spy already exists','data'=>$foundSpy],409);
+        }
 
         $spy = new Spy();
         $spy->name = $name;
@@ -55,9 +58,17 @@ class SpyController extends BaseController
         try {
             $spy->save();
         } catch(QueryException $e) {
-            
-            // Database shows this error code if constraint fails
-            // constraint will fail if duplicate record exists upon database
+
+            /**
+             * Database shows this error code if constraint fails
+             * constraint will fail if duplicate record exists upon database 
+             * 
+             * A constraint will fail upon master-slave replication database
+             * due to replication lag.
+             * 
+             * It is implemented like this in order to futureproof my schema.
+             * 
+             */
             if((int)$e->getCode() == 23000){
                 return new JsonResponse(['messages'=>'Spy already exists'],409);
             }
@@ -92,6 +103,21 @@ class SpyController extends BaseController
     {
         $page = (int)$request->get('page');
         $limit = (int)$request->get('limit');
+
+        if($request->has('fullname') && ($request->has('name') || $request->has('surname'))){
+            return new JsonResponse(['message'=>'You must provide either fullname or name and surname values seperately but not both'],400);
+        }
+
+        $qb = null;
+
+        if($request->has('name')){
+            $name = $request->get('name');
+            $name = trim($name);
+
+            if(empty($name)){
+                return new JsonResponse(['message'=>'Name must have a value'],400);
+            }
+        }
 
         return new JsonResponse(Spy::paginate($limit,['*'],'',$page),200);
     }
