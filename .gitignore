@@ -19,3 +19,4 @@ yarn-error.log
 /.vscode
 volumes
 .config/psysh
+psysh/psysh_history
