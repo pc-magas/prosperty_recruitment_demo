@@ -80,7 +80,6 @@ class SpyController extends BaseController
     public function randomSpies(Request $request): JsonResponse
     {
         $spies = Spy::limit(5)->inRandomOrder()->get();
-
         return new JsonResponse($spies);
     }
 
