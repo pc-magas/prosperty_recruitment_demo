@@ -9,8 +9,13 @@ use Illuminate\Support\Carbon;
 /**
  * A spy records in the database
  * 
- * @param int id Primary Key
- * @param name  
+ * @property int $id Primary Key
+ * @property string $name Spy's name 
+ * @property string $surname Spy's surname
+ * @property string $agencty Spy's agency
+ * @property string $birth_date Spy's Birth Date (Format YYYY-mm-dd)
+ * @property string $death_date Spy's Date that has passed away (Format YYYY-mm-dd)
+ * @property string $country_of_operation Country that spy currently is Operating
  * 
  */
 class Spy extends Model
