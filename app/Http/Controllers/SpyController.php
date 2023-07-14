@@ -100,15 +100,25 @@ class SpyController extends BaseController
      * @return JsonResponse
      */
     public function spies(Request $request): JsonResponse
-    {
-        $page = (int)$request->get('page');
-        $limit = (int)$request->get('limit');
+    {   
+        $inputParamers = array_keys($request->all());
 
-        if($request->has('fullname') && ($request->has('name') || $request->has('surname'))){
-            return new JsonResponse(['message'=>'You must provide either fullname or name and surname values seperately but not both'],400);
+        if(!empty($inputParamers) && array_intersect($inputParamers, ['page','limit','name','surname','age','sort_fullname','sort_age']) !== $inputParamers){
+            return new JsonResponse(['message'=>'Invalid Arguments'],400);
         }
 
-        $qb = null;
+        $page = (int)$request->get('page')??1;
+        $limit = (int)$request->get('limit')??10;
+
+        if($page < 0){
+            return new JsonResponse(['message'=>'Page must containe a positive value'],400);
+        }
+
+        if($limit < 0){
+            return new JsonResponse(['message'=>'Limit must containe a positive value'],400);
+        }
+
+        $qb = Spy::query();
 
         if($request->has('name')){
             $name = $request->get('name');
@@ -117,8 +127,21 @@ class SpyController extends BaseController
             if(empty($name)){
                 return new JsonResponse(['message'=>'Name must have a value'],400);
             }
+
+            $qb = $qb->where('name',$name);
         }
 
-        return new JsonResponse(Spy::paginate($limit,['*'],'',$page),200);
+        if($request->has('surname')){
+            $surname = $request->get('surname');
+            $surname = trim($surname);
+
+            if(empty($surname)){
+                return new JsonResponse(['message'=>'Surname must have a value'],400);
+            }
+
+            $qb = $qb->where('surname',$surname);
+        }
+
+        return new JsonResponse($qb->paginate($limit,['*'],'',$page),200);
     }
 }

@@ -51,6 +51,8 @@ class Spy extends Model
         throw new \InvalidArgumentException('Agency Is Invalid');
     }
 
+
+
     public function setDeathDateAttribute($value){
         
         if($value === null || empty($this->attributes['birth_date'])){
@@ -58,8 +60,13 @@ class Spy extends Model
             return;
         }
 
-
         $value = new Carbon($value);
+        
+        if(empty($this->attributes['birth_date'])){
+            $this->attributes['death_date']=$value->format('Y-m-d');
+            return;
+        }
+
         $birth_date = new Carbon($this->attributes['birth_date']);
 
         if($value->lessThanOrEqualTo($birth_date)){
@@ -67,6 +74,21 @@ class Spy extends Model
         }
 
         $this->attributes['death_date']=$value->format('Y-m-d');
+    }
+
+    /**
+     * Return death_date into sane and unique format
+     * Dates may not have the prepended zeroes at day and month
+     * 
+     * @return mixed
+     */
+    public function getDeathDateAttribute()
+    {
+        if(empty($this->attributes['death_date'])){
+            return $this->attributes['death_date'];
+        } 
+
+        return (new Carbon($this->attributes['death_date']))->format('Y-m-d');
     }
 
     public function setBirthDateAttribute($value){
@@ -85,5 +107,20 @@ class Spy extends Model
         }
 
         $this->attributes['birth_date']=$value->format('Y-m-d');
+    }
+
+    /**
+     * Return birth_date into sane and unique format
+     * Dates may not have the prepended zeroes at day and month
+     *
+     * @return mixed
+     */
+    public function getBirthDateAttribute()
+    {
+        if(empty($this->attributes['birth_date'])){
+            return $this->attributes['birth_date'];
+        } 
+
+        return (new Carbon($this->attributes['birth_date']))->format('Y-m-d');
     }
 }

@@ -240,56 +240,6 @@ class SpyRoutesTest extends TestCase
        ]);
     }
 
-    public function testGetSpiesBothBothNameAndFullname()
-    {
-        Sanctum::actingAs(
-            User::factory()->create(),
-            ['*']
-        );
-
-       Spy::factory()->count(100)->create();
-       Spy::factory()->create(['name'=>'lalala']);
-
-
-       $response = $this->get('/spies?page=1&limit=10&name=lalala&fullname=lalala');
-       
-       $response->assertStatus(400);
-       
-    }
-
-
-    public function testGetSpiesBothBothSurNameAndFullname()
-    {
-        Sanctum::actingAs(
-            User::factory()->create(),
-            ['*']
-        );
-
-       Spy::factory()->count(100)->create();
-       Spy::factory()->create(['name'=>'lalala']);
-
-
-       $response = $this->get('/spies?page=1&limit=10&surname=lalala&fullname=lalala');
-       
-       $response->assertStatus(400);
-       
-    }
-
-    public function testGetSpiesNameAnrSurNameAndFullnameProvided()
-    {
-        Sanctum::actingAs(
-            User::factory()->create(),
-            ['*']
-        );
-
-       Spy::factory()->count(100)->create();
-       Spy::factory()->create(['name'=>'lalala']);
-
-
-       $response = $this->get('/spies?page=1&limit=10&surname=lalala&name=lalala&fullname=lalala');
-       
-       $response->assertStatus(400);
-    }
 
     public function testGetSpiesFilterName()
     {
@@ -323,5 +273,114 @@ class SpyRoutesTest extends TestCase
        ]);
     }
 
+    public function testGetSpiesFilterNameNoValue()
+    {
+        Sanctum::actingAs(
+            User::factory()->create(),
+            ['*']
+        );
+
+       Spy::factory()->count(100)->create();
+
+       $response = $this->get('/spies?page=1&limit=10&name=&surname=Zafeiriou');
+
+       $response->assertStatus(400);
+
+    }
+
+    public function testGetSpiesFilterSurnameNoValue()
+    {
+        Sanctum::actingAs(
+            User::factory()->create(),
+            ['*']
+        );
+
+       Spy::factory()->count(100)->create();
+
+       $response = $this->get('/spies?page=1&limit=10&name=Ioannis&surname=');
+
+       $response->assertStatus(400);
+
+    }
+    
+    
+    public function testGetSpiesFilterNameAndSurname()
+    {
+        Sanctum::actingAs(
+            User::factory()->create(),
+            ['*']
+        );
+
+       Spy::factory()->count(100)->create();
+
+       // Add some spies with known values as well
+       Spy::factory()->create(['name'=>'Gigas','surname'=>'Vafeiadis']);
+       Spy::factory()->create(['name'=>'Megas','surname'=>'Zafeiriou'])->toArray();
+       $foundSpy = Spy::factory()->create(['name'=>'Nanos','surname'=>'Zafeiriou'])->toArray();
+
+       $response = $this->get('/spies?page=1&limit=10&name=Nanos&surname=Zafeiriou');
+       $response->assertStatus(200);
+
+       $responseContent = $response->getContent();
+       $responseContentJsonDecoded = json_decode($responseContent,true);
+       $this->assertEquals(1,(int)$responseContentJsonDecoded['current_page']);
+       $this->assertEquals(10,(int)$responseContentJsonDecoded['per_page']);
+
+       $this->assertCount(1,$responseContentJsonDecoded['data']);
+
+       $response->assertJson([
+        'current_page'=>1,
+        'data'=> [
+            0 => $foundSpy
+        ] 
+       ]);
+    }
+
+    public function testGetSpiesFilterSurnameMultiple()
+    {
+        Sanctum::actingAs(
+            User::factory()->create(),
+            ['*']
+        );
+
+       Spy::factory()->count(100)->create();
+       Spy::factory()->create(['name'=>'Gigas','surname'=>'Vafeiadis']);
+       $foundSpy = Spy::factory()->create(['name'=>'Nanos','surname'=>'Zafeiriou'])->toArray();
+       $foundSpy2 = Spy::factory()->create(['name'=>'Megas','surname'=>'Zafeiriou'])->toArray();
+
+       $response = $this->get('/spies?page=1&limit=10&surname=Zafeiriou');
+       $response->assertStatus(200);
+
+       $responseContent = $response->getContent();
+       $responseContentJsonDecoded = json_decode($responseContent,true);
+       $this->assertEquals(1,(int)$responseContentJsonDecoded['current_page']);
+       $this->assertEquals(10,(int)$responseContentJsonDecoded['per_page']);
+
+       $this->assertCount(2,$responseContentJsonDecoded['data']);
+
+       $response->assertJson([
+        'current_page'=>1,
+        'data'=> [
+            0 => $foundSpy,
+            1 => $foundSpy2
+        ] 
+       ]);
+    }
+
+    public function testGetSpiesFilterInvalidArguments()
+    {
+        Sanctum::actingAs(
+            User::factory()->create(),
+            ['*']
+        );
+
+       Spy::factory()->count(100)->create();
+       Spy::factory()->create(['name'=>'Gigas','surname'=>'Vafeiadis']);
+       $foundSpy = Spy::factory()->create(['name'=>'Nanos','surname'=>'Zafeiriou'])->toArray();
+       $foundSpy2 = Spy::factory()->create(['name'=>'Megas','surname'=>'Zafeiriou'])->toArray();
+
+       $response = $this->get('/spies?page=1&limit=10&gjlglkjkl');
+       $response->assertStatus(400);
+    }
 }
 
