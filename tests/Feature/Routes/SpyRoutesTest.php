@@ -476,5 +476,62 @@ class SpyRoutesTest extends TestCase
        $response = $this->get('/spies?page=1&limit=10&gjlglkjkl');
        $response->assertStatus(400);
     }
+
+    public function testGetSpiesSortByAgeDesc()
+    {
+        Sanctum::actingAs(
+            User::factory()->create(),
+            ['*']
+        );
+
+        $expectedResult1 = Spy::factory()->create([
+            'birth_date'=> Carbon::now()->modify('-43 years')->format('Y-m-d'),
+            'death_date' =>  null
+        ])->toArray();
+
+        $expectedResult2 = Spy::factory()->create([
+            'birth_date'=> Carbon::now()->modify('-44 years')->format('Y-m-d'),
+            'death_date' =>  null
+        ])->toArray();
+
+        $response = $this->get('/spies?page=1&limit=10&sort_age=DESC');
+        $response->assertStatus(200);
+
+        $response->assertJson([
+            'data' => [
+                $expectedResult2,
+                $expectedResult1,
+            ]
+        ]);
+    }
+
+    public function testGetSpiesSortByAgeAsc()
+    {
+
+        Sanctum::actingAs(
+            User::factory()->create(),
+            ['*']
+        );
+
+        $expectedResult1 = Spy::factory()->create([
+            'birth_date'=> Carbon::now()->modify('-43 years')->format('Y-m-d'),
+            'death_date' =>  null
+        ])->toArray();
+
+        $expectedResult2 = Spy::factory()->create([
+            'birth_date'=> Carbon::now()->modify('-44 years')->format('Y-m-d'),
+            'death_date' =>  null
+        ])->toArray();
+
+        $response = $this->get('/spies?page=1&limit=10&sort_age=ASC');
+        $response->assertStatus(200);
+
+        $response->assertJson([
+            'data' => [
+                $expectedResult1,
+                $expectedResult2,
+            ]
+        ]);
+    }
 }
 
