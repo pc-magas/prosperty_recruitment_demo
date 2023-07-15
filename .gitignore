@@ -20,3 +20,4 @@ yarn-error.log
 volumes
 .config/psysh
 psysh/psysh_history
+vendor

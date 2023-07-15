@@ -476,7 +476,5 @@ class SpyRoutesTest extends TestCase
        $response = $this->get('/spies?page=1&limit=10&gjlglkjkl');
        $response->assertStatus(400);
     }
-
-
 }
 

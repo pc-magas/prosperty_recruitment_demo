@@ -6,6 +6,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
 
+use Illuminate\Support\Facades\DB;
+
 use Illuminate\Database\QueryException;
 
 use App\Models\Spy;
@@ -94,6 +96,18 @@ class SpyController extends BaseController
         return new JsonResponse($spies);
     }
 
+    private function sanitizeFilteringInput(?string $string)
+    {
+        if(empty($string)){
+            return 'ASC';
+        }
+
+        $string = trim($string);
+        $string = strtoupper($string);
+
+        return in_array($string,['ASC','DESC'])?$string:'ASC';
+    }
+
     /**
      * GET /spies
      *
@@ -165,26 +179,19 @@ class SpyController extends BaseController
 
         if($request->has('sort_fullname')){
             $filter_type = $request->get('sort_fullname');
-            $filter_type = strtoupper($filter_type);
+            $filter_type = $this->sanitizeFilteringInput($filter_type);
 
-            if ($filter_type == 'DESC'){
-                $qb->raw("CONCAT(name,' ',surname) DESC");
-            } else { // Any value is assumed as ASC
-                $qb->raw("CONCAT(name,' ',surname) ASC");
-            }
+            $qb->orderBy(DB::raw("CONCAT(name,' ',surname)"), $filter_type);
         }
 
         if($request->has('sort_age')){
             $filter_type = $request->get('sort_age');
-            $filter_type = strtoupper($filter_type);
-
-            if ($filter_type == 'DESC'){
-                $qb->raw("TIMESTAMPDIFF(YEAR, birth_date,COALESCE(death_date,NOW())) DESC");
-            } else { // Any value is assumed as ASC
-                $qb->raw("TIMESTAMPDIFF(YEAR, birth_date,COALESCE(death_date,NOW())) ASC");
-            }
+            $filter_type = $this->sanitizeFilteringInput($filter_type);
+            $qb->orderBy(DB::raw("TIMESTAMPDIFF(YEAR, birth_date,COALESCE(death_date,NOW()))"), $filter_type);
         }
+
 
         return new JsonResponse($qb->paginate($limit,['*'],'',$page),200);
     }
+
 }
