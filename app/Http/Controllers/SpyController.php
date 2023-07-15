@@ -163,6 +163,28 @@ class SpyController extends BaseController
             }
         }
 
+        if($request->has('sort_fullname')){
+            $filter_type = $request->get('sort_fullname');
+            $filter_type = strtoupper($filter_type);
+
+            if ($filter_type == 'DESC'){
+                $qb->raw("CONCAT(name,' ',surname) DESC");
+            } else { // Any value is assumed as ASC
+                $qb->raw("CONCAT(name,' ',surname) ASC");
+            }
+        }
+
+        if($request->has('sort_age')){
+            $filter_type = $request->get('sort_age');
+            $filter_type = strtoupper($filter_type);
+
+            if ($filter_type == 'DESC'){
+                $qb->raw("TIMESTAMPDIFF(YEAR, birth_date,COALESCE(death_date,NOW())) DESC");
+            } else { // Any value is assumed as ASC
+                $qb->raw("TIMESTAMPDIFF(YEAR, birth_date,COALESCE(death_date,NOW())) ASC");
+            }
+        }
+
         return new JsonResponse($qb->paginate($limit,['*'],'',$page),200);
     }
 }
