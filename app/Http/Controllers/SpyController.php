@@ -143,6 +143,26 @@ class SpyController extends BaseController
             $qb = $qb->where('surname',$surname);
         }
 
+        if($request->has('age')){
+            $age = $request->get('age');
+            $age = trim($age);
+
+            if(!preg_match("/(\d+)(\s*-\s*(\d))?/",$age)){
+                return new JsonResponse(['message'=>'Age Input Not valid'],400);
+            }
+
+            $range = explode('-',$age);
+            $range = array_map('intval',$range);
+            sort($range);
+
+            if(count($range) == 2){
+                $qb->whereRaw("TIMESTAMPDIFF(YEAR, birth_date,COALESCE(death_date,NOW())) >= :age_start",['age_start'=>$range[0]])
+                    ->whereRaw("TIMESTAMPDIFF(YEAR, birth_date,COALESCE(death_date,NOW())) <= :age_end",['age_end'=>$range[1]]);
+            } else {
+                $qb->whereRaw("TIMESTAMPDIFF(YEAR, birth_date,COALESCE(death_date,NOW())) = :age",['age'=>$range[0]]);
+            }
+        }
+
         return new JsonResponse($qb->paginate($limit,['*'],'',$page),200);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Routes;
 
+use Illuminate\Support\Carbon;
 use Illuminate\Testing\Fluent\AssertableJson;
 use Laravel\Sanctum\Sanctum;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -367,6 +368,41 @@ class SpyRoutesTest extends TestCase
        ]);
     }
 
+    public function testGetSpiesFilterExactAge()
+    {
+        Sanctum::actingAs(
+            User::factory()->create(),
+            ['*']
+        );
+
+        $expectedResult1 = Spy::factory()->create([
+            'birth_date'=>'1980-03-08',
+            'death_date' =>  (new Carbon('1980-03-08'))->modify("+43 years")->format('Y-m-d')
+        ])->toArray();
+
+        $expectedResult2 = Spy::factory()->create([
+            'birth_date'=> Carbon::now()->modify('-43 years')->format('Y-m-d'),
+            'death_date' =>  null
+        ])->toArray();
+
+        Spy::factory()->create([
+            'birth_date'=> '1990-03-08',
+            'death_date' =>  null
+        ]);
+
+        $response = $this->get('/spies?page=1&limit=10&age=43');
+        $response->assertStatus(200);
+ 
+        $response->assertJson([
+            'current_page'=>1,
+            'data'=>[
+                $expectedResult1,
+                $expectedResult2
+            ]
+        ]);
+
+    }
+
     public function testGetSpiesFilterInvalidArguments()
     {
         Sanctum::actingAs(
@@ -382,5 +418,7 @@ class SpyRoutesTest extends TestCase
        $response = $this->get('/spies?page=1&limit=10&gjlglkjkl');
        $response->assertStatus(400);
     }
+
+
 }
 
