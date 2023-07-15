@@ -403,6 +403,64 @@ class SpyRoutesTest extends TestCase
 
     }
 
+    public function testAgeRange()
+    {
+        Sanctum::actingAs(
+            User::factory()->create(),
+            ['*']
+        );
+
+
+        $expectedResult1 = Spy::factory()->create([
+            'birth_date'=>'1980-03-08',
+            'death_date' =>  (new Carbon('1980-03-08'))->modify("+43 years")->format('Y-m-d')
+        ])->toArray();
+
+        $expectedResult2 = Spy::factory()->create([
+            'birth_date'=> Carbon::now()->modify('-43 years')->format('Y-m-d'),
+            'death_date' =>  null
+        ])->toArray();
+
+        $expectedResult3 = Spy::factory()->create([
+            'birth_date'=> Carbon::now()->modify('-20 years')->format('Y-m-d'),
+            'death_date' =>  null
+        ])->toArray();
+
+        $expectedResult4 = Spy::factory()->create([
+            'birth_date'=> Carbon::now()->modify('-30 years')->format('Y-m-d'),
+            'death_date' =>  null
+        ])->toArray();
+
+        $expectedResult5 = Spy::factory()->create([
+            'birth_date'=> '2950-06-20',
+            'death_date' =>  (new Carbon('2950-06-20'))->modify("+30 years")->format('Y-m-d')
+        ])->toArray();
+
+        Spy::factory()->create([
+            'birth_date'=> '2950-06-20',
+            'death_date' =>  (new Carbon('2950-06-20'))->modify("+45 years")->format('Y-m-d')
+        ]);
+        
+        Spy::factory()->create([
+            'birth_date'=>  Carbon::now()->modify("-45 years")->format('Y-m-d'),
+            'death_date' => null
+        ]);
+
+        $response = $this->get('/spies?page=1&limit=10&age=20-43');
+        $response->assertStatus(200);
+ 
+        $response->assertJson([
+            'current_page'=>1,
+            'data'=>[
+                $expectedResult1,
+                $expectedResult2,
+                $expectedResult3,
+                $expectedResult4,
+                $expectedResult5
+            ]
+        ]);
+    }
+
     public function testGetSpiesFilterInvalidArguments()
     {
         Sanctum::actingAs(
